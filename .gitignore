@@ -1,0 +1,6 @@
+# Frontend .gitignore (already in frontend dir, but included here for reference)
+# Root level ignore files
+__pycache__/
+*.pyc
+.env*
+!.env.example

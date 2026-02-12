@@ -20,7 +20,8 @@ Code Architect Hackathon/
 ├── backend/                    # Python Flask backend (Deploy on Render)
 │   ├── main.py                # Flask application entry
 │   ├── config.py              # Configuration management
-│   ├── requirements.txt        # Python dependencies
+│   ├── requirements.txt       # Python dependencies
+│   ├── .env.example           # Environment variable template
 │   ├── routes/
 │   │   ├── gemini_routes.py   # Gemini API endpoints
 │   │   └── analysis_routes.py # Analysis endpoints
@@ -29,7 +30,7 @@ Code Architect Hackathon/
 │   └── models/
 │       └── schemas.py         # Pydantic models
 │
-├── frontend/                   # React/Next.js frontend (Deploy on Vercel)
+├── frontend/                   # Next.js frontend (Deploy on Vercel)
 │   ├── src/
 │   │   ├── app/
 │   │   │   ├── page.tsx       # Main dashboard
@@ -44,9 +45,11 @@ Code Architect Hackathon/
 │   ├── package.json
 │   ├── tsconfig.json
 │   ├── tailwind.config.ts
-│   ├── next.config.js
-│   └── vercel.json           # Vercel deployment config
+│   ├── postcss.config.js      # PostCSS / Tailwind plugin config
+│   ├── next.config.mjs        # Next.js configuration (ESM)
+│   └── vercel.json            # Vercel deployment config
 │
+├── render.yaml                # Render deployment config
 └── README.md                  # This file
 ```
 
@@ -67,7 +70,9 @@ Code Architect Hackathon/
 2. **Create virtual environment:**
    ```bash
    python -m venv venv
-   source venv/Scripts/activate  # Windows: venv\Scripts\activate
+   # Linux/macOS: source venv/bin/activate
+   # Windows:
+   venv\Scripts\activate
    ```
 
 3. **Install dependencies:**
@@ -169,9 +174,10 @@ User provides a repository URL, branch, focus areas, and analysis depth.
 
 1. **Create Vercel account** at https://vercel.com
 2. **Import project** from GitHub
-3. **Set environment variables:**
-   - `NEXT_PUBLIC_API_URL`: Your Render backend URL
-4. **Deploy** (automatic on push to main)
+3. **Set Root Directory** to `frontend`
+4. **Set environment variables:**
+   - `NEXT_PUBLIC_API_URL`: Your Render backend URL (e.g. `https://code-architect.onrender.com`)
+5. **Deploy** (automatic on push to main)
 
 ## 📝 API Endpoints
 
@@ -222,11 +228,11 @@ npm run build
 
 ## 📚 Tech Stack
 
-**Blask - Lightweight Python web framework
+**Backend:**
+- Flask - Lightweight Python web framework
 - Google Generative AI SDK - Gemini integration
 - Pydantic - Data validation
-- Gunicorn - WData validation
-- Uvicorn - ASGI server
+- Gunicorn - WSGI production server
 - GitPython - Repository handling
 
 **Frontend:**

@@ -1,58 +1,47 @@
 from flask import Blueprint, request, jsonify
-from models.schemas import RepositoryInput, AnalysisResponse, AnalysisStatus
+from models.schemas import RepositoryInput, AnalysisStatus
 from services.gemini_service import GeminiService
 import uuid
 
 bp = Blueprint("gemini", __name__)
 gemini_service = GeminiService()
 
+
 @bp.route("/analyze", methods=["POST"])
 def analyze_repository():
-    """
-    Start autonomous analysis of a repository using Gemini 3
-    """
+    """Start autonomous analysis of a repository using Gemini."""
     try:
         data = request.get_json()
         repo_input = RepositoryInput(**data)
         analysis_id = str(uuid.uuid4())
-        
-        # Initialize analysis with Gemini service
-        analysis = gemini_service.start_analysis(
+
+        result = gemini_service.start_analysis(
             analysis_id=analysis_id,
             repository_url=repo_input.repository_url,
             branch=repo_input.branch,
             focus_areas=repo_input.focus_areas,
-            depth=repo_input.depth
+            depth=repo_input.depth,
         )
-        
+
         return jsonify({
             "analysis_id": analysis_id,
             "status": AnalysisStatus.ANALYZING,
             "repository_url": repo_input.repository_url,
-            "findings": analysis.get("findings"),
-            "recommendations": analysis.get("recommendations"),
-            "generated_code": analysis.get("generated_code")
+            "findings": result.get("findings"),
+            "recommendations": result.get("recommendations"),
+            "generated_code": result.get("generated_code"),
         })
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
+    except Exception as exc:
+        return jsonify({"error": str(exc)}), 500
+
 
 @bp.route("/analyze/<analysis_id>", methods=["GET"])
 def get_analysis_status(analysis_id):
-    """
-    Get status and results of an ongoing analysis
-    """
+    """Get status and results of an ongoing analysis."""
     try:
         result = gemini_service.get_analysis_result(analysis_id)
         if not result:
             return jsonify({"error": "Analysis not found"}), 404
         return jsonify(result)
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-
-@bp.route("/health", methods=["GET"])
-def health():
-    """Health check for Gemini routes"""
-    return jsonify({"status": "healthy", "service": "gemini-routes"})
-async def health():
-    """Health check for Gemini routes"""
-    return {"status": "healthy", "service": "gemini-routes"}
+    except Exception as exc:
+        return jsonify({"error": str(exc)}), 500
